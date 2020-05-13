@@ -30,7 +30,7 @@ update_parameters({ 'simulation_reps'       : 0,
                     'balance_EI'            : True,
                     'savedir'               : './savedir/'})
 
-task_list = ['DMS']
+task_list = ['WM']
 
 for task in task_list:
     for n in range(20):

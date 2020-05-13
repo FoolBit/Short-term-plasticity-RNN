@@ -158,7 +158,7 @@ def main(gpu_id = None):
     t = tf.placeholder(tf.float32, [par['num_time_steps'], par['batch_size'], par['n_output']], 'target')
 
     # enter "config=tf.ConfigProto(log_device_placement=True)" inside Session to check whether CPU/GPU in use
-    with tf.Session(config=tf.ConfigProto()) as sess:
+    with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
 
         device = '/cpu:0' if gpu_id is None else '/gpu:0'
         with tf.device(device):

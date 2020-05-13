@@ -60,7 +60,7 @@ par = {
     'iters_between_outputs' : 100,
 
     # Task specs
-    'trial_type'            : 'DMS', # allowable types: DMS, DMRS45, DMRS90, DMRS180, DMC, DMS+DMRS, ABBA, ABCA, dualDMS
+    'trial_type'            : 'dualDMS', # allowable types: DMS, DMRS45, DMRS90, DMRS180, DMC, DMS+DMRS, ABBA, ABCA, dualDMS
     'rotation_match'        : 0,  # angular difference between matching sample and test
     'dead_time'             : 0,
     'fix_time'              : 500,
@@ -135,6 +135,22 @@ def update_trial_params():
         par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + 3*par['delay_time']/2 + par['test_time'])
         par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + 2*par['delay_time'] + 2*par['test_time'])
 
+    elif par['trial_type'] == 'WM':
+        par['num_motion_dirs'] = 6
+        par['catch_trial_pct'] = 0
+        par['num_rules'] = 2
+        par['probe_trial_pct'] = 0
+        par['probe_time'] = 10
+        par['num_rule_tuned'] = 6
+        par['sample_time'] = 500
+        par['test_time'] = 500
+        par['delay_time'] = 1000
+        par['analyze_rule'] = True
+        par['rule_onset_time'] = []
+        par['rule_offset_time'] = []
+        par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time'])
+        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time'] + par['test_time'])
+
 
     elif par['trial_type'] == 'ABBA' or par['trial_type'] == 'ABCA':
         par['catch_trial_pct'] = 0
@@ -189,7 +205,9 @@ def update_trial_params():
         print(par['trial_type'], ' not a recognized trial type')
         quit()
 
-    if par['trial_type'] == 'dualDMS':
+    if par['trial_type'] == 'WM':
+        par['trial_length'] = par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['test_time']
+    elif par['trial_type'] == 'dualDMS':
         par['trial_length'] = par['dead_time']+par['fix_time']+par['sample_time']+2*par['delay_time']+2*par['test_time']
     else:
         par['trial_length'] = par['dead_time']+par['fix_time']+par['sample_time']+par['delay_time']+par['test_time']
