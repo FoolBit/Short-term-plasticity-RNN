@@ -112,7 +112,7 @@ class Model:
 
         # Calculate the loss functions and optimize the weights
         self.perf_loss = tf.reduce_mean(self.mask*tf.nn.softmax_cross_entropy_with_logits_v2(\
-            logits = self.y, labels = self.target_data, axis = 2))
+            logits = self.y, labels = self.target_data, dim = 2))
 
         # L2 penalty term on hidden state activity to encourage low spike rate solutions
         n = 2 if par['spike_regularization'] == 'L2' else 1
