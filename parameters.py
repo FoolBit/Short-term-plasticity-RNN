@@ -145,12 +145,12 @@ def update_trial_params():
         par['num_rule_tuned'] = 6
         par['sample_time'] = 500
         par['test_time'] = 1000
-        par['delay_time'] = 1000
+        par['delay_time'] = 500
         par['analyze_rule'] = True
         par['rule_onset_time'] = []
         par['rule_offset_time'] = []
-        par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time'])
-        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time']+par['delay_time']//2)
+        par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + 2*par['sample_time'] + 2*par['delay_time'])
+        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + 2*par['sample_time'] + 2*par['delay_time']+par['delay_time'])
 
 
     elif par['trial_type'] == 'ABBA' or par['trial_type'] == 'ABCA':
@@ -207,7 +207,7 @@ def update_trial_params():
         quit()
 
     if par['trial_type'] == 'WM':
-        par['trial_length'] = par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2+par['test_time']
+        par['trial_length'] = par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']+par['test_time']
     elif par['trial_type'] == 'dualDMS':
         par['trial_length'] = par['dead_time']+par['fix_time']+par['sample_time']+2*par['delay_time']+2*par['test_time']
     else:

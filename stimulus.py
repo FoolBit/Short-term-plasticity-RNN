@@ -60,10 +60,10 @@ class Stimulus:
             sample_time_rng.append(range((par['dead_time']+par['fix_time']+n*par['sample_time']+n*par['delay_time'])//par['dt'], \
                 (par['dead_time']+par['fix_time']+(n+1)*par['sample_time']+n*par['delay_time'])//par['dt']))
 
-        test_time_rng.append(range((par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2)//par['dt'], \
-            (par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2+par['test_time'])//par['dt']))
-        mask_time_rng.append(range((par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2)//par['dt'], \
-            (par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2+par['mask_duration'])//par['dt']))
+        test_time_rng.append(range((par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time'])//par['dt'], \
+            (par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']+par['test_time'])//par['dt']))
+        mask_time_rng.append(range((par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time'])//par['dt'], \
+            (par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']+par['mask_duration'])//par['dt']))
             
 
         fix_time_rng = []
