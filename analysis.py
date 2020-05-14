@@ -24,15 +24,16 @@ neuron_groups.append(range(par['num_exc_units'],par['num_exc_units']+par['num_in
 neuron_groups.append(range(par['num_exc_units']+1,par['num_exc_units']+par['num_inh_units'],2))
 neuron_groups.append(range(par['n_hidden']))
 
+
 def run_multiple():
 
-    task_list = ['DMS']
+    task_list = ['WM']
 
     update_params = {
         'decode_stability':         False,
         'decoding_reps':            100,
         'simulation_reps':          100,
-        'analyze_tuning':           True,
+        'analyze_tuning':           False,
         'calculate_resp_matrix':    True,
         'suppress_analysis':        False,
         'decode_test':              False,
@@ -43,7 +44,7 @@ def run_multiple():
 
 
     for t in task_list:
-        for j in range(20):
+        for j in range(1):
             fn = data_dir + t + str(j) + '.pkl'
             print('Analyzing ', fn)
             analyze_model_from_file(fn, savefile = fn, update_params = update_params)
@@ -212,6 +213,11 @@ def calculate_svms(h, syn_x, syn_u, trial_info, trial_time, num_reps = 20, num_r
         test = np.floor(trial_info['test']/(num_motion_dirs/2)*np.ones_like(trial_info['sample']))
         rule = trial_info['rule']
         match = np.array(trial_info['match'])
+    elif par['trial_type'] == 'WM':
+        sample = trial_info['sample']
+        test = trial_info['test']
+        rule = trial_info['rule']
+        match = np.array(trial_info['match'])
     elif par['trial_type'] == 'dualDMS':
         sample = trial_info['sample']
         rule = trial_info['rule'][:,0] + 2*trial_info['rule'][:,1]
@@ -320,8 +326,8 @@ def svm_wraper_simple(lin_clf, h, syn_eff, stimulus, rule, num_reps, num_reps_st
 
     for r in range(num_rules):
         ind_rule = np.where(rule==r)[0]
-        for rf in range(par['num_receptive_fields']):
-            if par['trial_type'] == 'dualDMS':
+        for rf in range(2):
+            if par['trial_type'] == 'dualDMS' or par['trial_type'] == 'WM':
                 labels = np.array(stimulus[:,rf])
             else:
                 labels = np.array(stimulus)
@@ -375,7 +381,7 @@ def svm_wraper(lin_clf, h, syn_eff, conds, rule, num_reps, num_reps_stability, t
     for r in range(num_rules):
         ind_rule = np.where(rule==r)[0]
         for n in range(par['num_receptive_fields']):
-            if par['trial_type'] == 'dualDMS':
+            if par['trial_type'] == 'dualDMS' or par['trial_type'] == 'WM':
                 current_conds = np.array(conds[:,n])
             else:
                 current_conds = np.array(conds)
@@ -469,7 +475,7 @@ def normalize_values(z, train_ind):
 
 def calculate_response_matrix(trial_info, network_weights):
 
-    test_onset = (par['dead_time']+par['fix_time']+par['sample_time']+par['delay_time'])//par['dt']
+    test_onset = (par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time'])//par['dt']
 
     resp_matrix_results = {
         'resp_no_suppresion' : np.zeros((par['n_hidden'], par['num_motion_dirs'], par['num_motion_dirs']), dtype = np.float32),
@@ -498,7 +504,7 @@ def average_test_response(h, trial_info, test_onset):
     h_test = np.mean(h[test_onset:, :, : ], axis=0)
     for i in range(par['num_motion_dirs']):
         for j in range(par['num_motion_dirs']):
-            ind = np.where((trial_info['sample']==i)*(trial_info['test']==j))[0]
+            ind = np.where((trial_info['sample'][:,trial_info['rule'] ]==i)*(trial_info['test']==j))[0]
             resp[:, i, j] = np.mean(h_test[ind, :], axis = 0)
 
     return resp
@@ -511,6 +517,8 @@ def simulate_network(trial_info, h, syn_x, syn_u, network_weights, num_reps = 20
     # Simulation will start from the start of the test period until the end of trial
     if par['trial_type'] == 'dualDMS':
         test_onset = [(par['dead_time']+par['fix_time']+par['sample_time']+2*par['delay_time']+par['test_time'])//par['dt']]
+    elif par['trial_type'] == 'WM':
+        test_onset = [(par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time'])//par['dt']]
     elif  par['trial_type'] in ['ABBA','ABCA']:
         test_onset = [(par['dead_time']+par['fix_time']+par['sample_time']+i*par['ABBA_delay'])//par['dt'] for i in range(1,2)]
     elif  par['trial_type'] in ['DMS', 'DMC', 'DMRS90', 'DMRS90ccw']:
@@ -964,3 +972,7 @@ def get_perf(target, output, mask):
     accuracy_match = np.sum(np.float32(target_max == output_max)*np.squeeze(mask_match))/np.sum(mask_match)
 
     return accuracy, accuracy_non_match, accuracy_match
+
+
+if ANALYZE == 1:
+    run_multiple()

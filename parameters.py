@@ -8,6 +8,7 @@ print("--> Loading parameters...")
 """
 Independent parameters
 """
+ANALYZE = 1
 
 par = {
     # Setup parameters
@@ -55,7 +56,7 @@ par = {
     'U_std'                 : 0.45,
 
     # Training specs
-    'batch_size'            : 1024,
+    'batch_size'            : 64,
     'num_iterations'        : 2000,
     'iters_between_outputs' : 100,
 
@@ -143,7 +144,7 @@ def update_trial_params():
         par['probe_time'] = 10
         par['num_rule_tuned'] = 6
         par['sample_time'] = 500
-        par['test_time'] = 500
+        par['test_time'] = 1000
         par['delay_time'] = 1000
         par['analyze_rule'] = True
         par['rule_onset_time'] = []

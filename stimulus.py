@@ -81,12 +81,9 @@ class Stimulus:
         trial_info = {'desired_output'  :  np.zeros((par['num_time_steps'], par['batch_size'], par['n_output']),dtype=np.float32),
                       'train_mask'      :  np.ones((par['num_time_steps'], par['batch_size']),dtype=np.float32),
                       'sample'          :  np.zeros((par['batch_size'],2),dtype=np.int8),
-                      'test'            :  np.zeros((par['batch_size'],2,2),dtype=np.int8),
-                      'test_mod'        :  np.zeros((par['batch_size'],2),dtype=np.int8),
-                      'rule'            :  np.zeros((par['batch_size'],2),dtype=np.int8),
-                      'match'           :  np.zeros((par['batch_size'],2),dtype=np.int8),
-                      'catch'           :  np.zeros((par['batch_size'],2),dtype=np.int8),
-                      'probe'           :  np.zeros((par['batch_size'],2),dtype=np.int8),
+                      'test'            :  np.zeros((par['batch_size']),dtype=np.int8),
+                      'rule'            :  np.zeros((par['batch_size']),dtype=np.int8),
+                      'match'           :  np.zeros((par['batch_size']),dtype=np.int8),
                       'neural_input'    :  np.random.normal(par['input_mean'], par['noise_in'], size=(par['num_time_steps'], par['batch_size'], par['n_input']))}
 
 
@@ -95,23 +92,21 @@ class Stimulus:
             # generate sample, match, rule and prob params
             for i in range(2):
                 trial_info['sample'][t,i] = np.random.randint(par['num_motion_dirs'])
-                trial_info['match'][t,i] = np.random.randint(2)
-                trial_info['rule'][t,i] = np.random.randint(2)
-                if i == 1:
-                    # only generate a pulse during 2nd delay epoch
-                    trial_info['probe'][t,i] = np.random.rand() < par['probe_trial_pct']
+                
 
             # determine test stimulu based on sample and match status
-            cue_stim = np.random.randint(2)
+            trial_info['match'][t] = np.random.randint(2)
+            trial_info['rule'][t] = np.random.randint(2)
+            cue_stim = trial_info['rule'][t]
             if test_mode:
-                cue_dir = np.random.randint(par['num_motion_dirs'])
+                trial_info['test'][t] = np.random.randint(par['num_motion_dirs'])
             else:
-                if trial_info['match'][t,cue_stim] == 1:
-                    cue_dir = trial_info['sample'][t,cue_stim]
+                if trial_info['match'][t]== 1:
+                    trial_info['test'][t] = trial_info['sample'][t,trial_info['rule'][t]]
                 else:
-                    bad_directions = [trial_info['sample'][t,cue_stim]]
+                    bad_directions = [trial_info['sample'][t,trial_info['rule'][t]]]
                     possible_stim = np.setdiff1d(list(range(par['num_motion_dirs'])), bad_directions)
-                    cue_dir = possible_stim[np.random.randint(len(possible_stim))]
+                    trial_info['test'][t] = possible_stim[np.random.randint(len(possible_stim))]
 
             
 
@@ -126,7 +121,7 @@ class Stimulus:
 
             # Cued TEST stimuli
             trial_info['neural_input'][test_time_rng[0], t, :] += \
-                np.reshape(cue_dir,(1,-1))
+                np.reshape(trial_info['test'][t],(1,-1))
 
             # FIXATION
             trial_info['neural_input'][fix_time_rng[0], t, :] += np.reshape(self.fix_tuning[:,0],(1,-1))
@@ -134,7 +129,7 @@ class Stimulus:
             trial_info['neural_input'][fix_time_rng[2], t, :] += np.reshape(self.fix_tuning[:,0],(1,-1))
 
             # RULE CUE
-            trial_info['neural_input'][par['rule_time_rng'][0], t, :] += np.reshape(self.rule_tuning[:,cue_stim],(1,-1))
+            trial_info['neural_input'][par['rule_time_rng'][0], t, :] += np.reshape(self.rule_tuning[:,trial_info['rule'][t]],(1,-1))
             # PROBE
             # increase reponse of all stim tuned neurons by 10
             """
@@ -153,7 +148,7 @@ class Stimulus:
             trial_info['desired_output'][fix_time_rng[2], t, 0] = 1
             # TEST
             trial_info['train_mask'][ test_time_rng[0], t] *= par['test_cost_multiplier'] # can use a greater weight for test period if needed
-            if trial_info['match'][t,cue_stim] == 1:
+            if trial_info['match'][t] == 1:
                 trial_info['desired_output'][test_time_rng[0], t, 2] = 1
             else:
                 trial_info['desired_output'][test_time_rng[0], t, 1] = 1

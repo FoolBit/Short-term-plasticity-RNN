@@ -34,6 +34,6 @@ task_list = ['WM']
 
 for task in task_list:
     for n in range(20):
-        save_fn = task + str(n) + '.pkl'
+        save_fn = task + str(n) + 'model.pkl'
         update_parameters({'trial_type': task, 'save_fn': save_fn})
         try_model(gpu_id)
