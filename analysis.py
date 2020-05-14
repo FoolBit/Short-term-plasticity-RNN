@@ -972,7 +972,3 @@ def get_perf(target, output, mask):
     accuracy_match = np.sum(np.float32(target_max == output_max)*np.squeeze(mask_match))/np.sum(mask_match)
 
     return accuracy, accuracy_non_match, accuracy_match
-
-
-if ANALYZE == 1:
-    run_multiple()
