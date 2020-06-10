@@ -6,7 +6,6 @@ Contributions from Gregory Grant, Catherine Lee
 import tensorflow as tf
 import numpy as np
 import stimulus
-import analysis
 import pickle
 import time
 from parameters import par
@@ -138,6 +137,7 @@ class Model:
         self.train_op = opt.apply_gradients(capped_gvs)
 
 
+# 具体的训练部分代码
 def main(gpu_id = None):
 
     if gpu_id is not None:

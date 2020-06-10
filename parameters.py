@@ -61,7 +61,7 @@ par = {
     'iters_between_outputs' : 100,
 
     # Task specs
-    'trial_type'            : 'dualDMS', # allowable types: DMS, DMRS45, DMRS90, DMRS180, DMC, DMS+DMRS, ABBA, ABCA, dualDMS
+    'trial_type'            : 'WM', # allowable types: DMS, DMRS45, DMRS90, DMRS180, DMC, DMS+DMRS, ABBA, ABCA, dualDMS
     'rotation_match'        : 0,  # angular difference between matching sample and test
     'dead_time'             : 0,
     'fix_time'              : 500,
@@ -102,117 +102,30 @@ def update_trial_params():
     par['rule_onset_time'] = [par['dead_time']]
     par['rule_offset_time'] = [par['dead_time']]
 
-    if par['trial_type'] == 'DMS' or par['trial_type'] == 'DMC':
-        par['rotation_match'] = 0
-
-    elif par['trial_type'] == 'DMRS45':
-        par['rotation_match'] = 45
-
-    elif par['trial_type'] == 'DMRS90':
-        par['rotation_match'] = 90
-
-    elif par['trial_type'] == 'DMRS90ccw':
-        par['rotation_match'] = -90
-
-    elif  par['trial_type'] == 'DMRS180':
-        par['rotation_match'] = 180
-
-    elif par['trial_type'] == 'dualDMS':
-        par['catch_trial_pct'] = 0
-        par['num_receptive_fields'] = 2
-        par['num_rules'] = 2
+    if par['trial_type'] == 'WM':
+        par['num_motion_dirs'] = 6 # 多少个方向
+        par['catch_trial_pct'] = 0 # catch trial的比率
+        par['num_rules'] = 2 # 几种cue
         par['probe_trial_pct'] = 0
         par['probe_time'] = 10
-        par['num_rule_tuned'] = 6
-        par['sample_time'] = 500
-        par['test_time'] = 500
-        par['delay_time'] = 1000
+        par['num_rule_tuned'] = 6 
+        par['sample_time'] = 500 # 刺激的持续时间
+        par['test_time'] = 500 # 目标刺激的持续时间
+        par['delay_time'] = 1000 # delay的持续时间
         par['analyze_rule'] = True
-        par['num_motion_tuned'] = 24*2
-        par['rule_onset_time'] = []
-        par['rule_offset_time'] = []
-        par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time']/2)
-        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + par['delay_time'] + par['test_time'])
-        par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + 3*par['delay_time']/2 + par['test_time'])
-        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + par['sample_time'] + 2*par['delay_time'] + 2*par['test_time'])
-
-    elif par['trial_type'] == 'WM':
-        par['num_motion_dirs'] = 6
-        par['catch_trial_pct'] = 0
-        par['num_rules'] = 2
-        par['probe_trial_pct'] = 0
-        par['probe_time'] = 10
-        par['num_rule_tuned'] = 6
-        par['sample_time'] = 500
-        par['test_time'] = 1000
-        par['delay_time'] = 500
-        par['analyze_rule'] = True
-        par['rule_onset_time'] = []
-        par['rule_offset_time'] = []
+        par['rule_onset_time'] = [] # cue的onset时间
+        par['rule_offset_time'] = [] # cue的offset时间
+        # cue的持续时间取 delay_time//2
         par['rule_onset_time'].append(par['dead_time'] + par['fix_time'] + 2*par['sample_time'] + 2*par['delay_time'])
-        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + 2*par['sample_time'] + 2*par['delay_time']+par['delay_time'])
+        par['rule_offset_time'].append(par['dead_time'] + par['fix_time'] + 2*par['sample_time'] + 2*par['delay_time']+par['delay_time']//2)
 
-
-    elif par['trial_type'] == 'ABBA' or par['trial_type'] == 'ABCA':
-        par['catch_trial_pct'] = 0
-        par['match_test_prob'] = 0.5
-        par['max_num_tests'] = 3
-        par['sample_time'] = 400
-        par['ABBA_delay'] = 400
-        par['delay_time'] = 6*par['ABBA_delay']
-        par['repeat_pct'] = 0
-        par['analyze_test'] = False
-        if par['trial_type'] == 'ABBA':
-            par['repeat_pct'] = 0.5
-
-    elif 'DMS+DMRS' in par['trial_type']:
-
-        par['num_rules'] = 2
-        par['num_rule_tuned'] = 6
-        if par['trial_type'] == 'DMS+DMRS':
-            par['rotation_match'] = [0, 90]
-            par['rule_onset_time'] = [par['dead_time']+par['fix_time']+par['sample_time'] + 500]
-            par['rule_offset_time'] = [par['dead_time']+par['fix_time']+par['sample_time'] + 750]
-        elif par['trial_type'] == 'DMS+DMRS_full_cue':
-            par['rotation_match'] = [0, 90]
-            par['rule_onset_time'] = [par['dead_time']]
-            par['rule_offset_time'] = [par['dead_time']+par['fix_time']+par['sample_time']\
-                +par['delay_time']+par['test_time']]
-        else:
-            par['rotation_match'] = [0, 90]
-            par['rule_onset_time'] = [par['dead_time']]
-            par['rule_offset_time'] = [par['dead_time']+par['fix_time']]
-
-    elif par['trial_type'] == 'DMS+DMC':
-        par['num_rules'] = 2
-        par['num_rule_tuned'] = 12
-        par['rotation_match'] = [0, 0]
-        par['rule_onset_time'] = [par['dead_time']]
-        par['rule_offset_time'] = [par['dead_time']+par['fix_time']+par['sample_time'] + par['delay_time'] + par['test_time']]
-
-    elif par['trial_type'] == 'DMS+DMRS+DMC':
-        par['num_rules'] = 3
-        par['num_rule_tuned'] = 18
-        par['rotation_match'] = [0, 90, 0]
-        par['rule_onset_time'] = [par['dead_time']]
-        par['rule_offset_time'] = [par['dead_time']+par['fix_time']+par['sample_time'] + par['delay_time'] + par['test_time']]
-
-    elif par['trial_type'] == 'location_DMS':
-        par['num_receptive_fields'] = 3
-        par['rotation_match'] = 0
-        par['num_motion_tuned'] = 24*3
 
     else:
         print(par['trial_type'], ' not a recognized trial type')
         quit()
 
     if par['trial_type'] == 'WM':
-        par['trial_length'] = par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']+par['test_time']
-    elif par['trial_type'] == 'dualDMS':
-        par['trial_length'] = par['dead_time']+par['fix_time']+par['sample_time']+2*par['delay_time']+2*par['test_time']
-    else:
-        par['trial_length'] = par['dead_time']+par['fix_time']+par['sample_time']+par['delay_time']+par['test_time']
-    # Length of each trial in time steps
+        par['trial_length'] = par['dead_time']+par['fix_time']+2*par['sample_time']+2*par['delay_time']+par['delay_time']//2+par['test_time']
     par['num_time_steps'] = par['trial_length']//par['dt']
 
 

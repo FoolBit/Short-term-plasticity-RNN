@@ -1,3 +1,4 @@
+# 用来把训好的模型得到的数据保存成.mat
 import scipy.io as sio
 import numpy as np
 from parameters import *
@@ -96,7 +97,7 @@ def rnn_cell(rnn_input, h, syn_x, syn_u, weights, suppress_activity):
 
 
 data_dir = './savedir/'
-filename = data_dir + 'WM0.pkl'
+filename = data_dir + 'WMnew.pkl' # 保存的模型文件
 results = pickle.load(open(filename, 'rb'))
 
 update_parameters(results['parameters'])
@@ -121,7 +122,7 @@ _, h_decode, syn_x_decode, syn_u_decode = run_model(input_data, h_init, \
     results['parameters']['syn_x_init'], results['parameters']['syn_u_init'], results['weights'])
 '''
 
-sio.savemat('networkData.mat',
+sio.savemat('WMnew.mat',
             {'y':y,
              'h':h,
              'syn_x':syn_x,

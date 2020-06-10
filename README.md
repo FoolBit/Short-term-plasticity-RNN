@@ -1,4 +1,12 @@
 # Short-term-plasticity-RNN
+只保留了本实验需要的内容
+
+
+
+## 原始版本
+
+原始网址：https://github.com/nmasse/Short-term-plasticity-RNN
+
 Code accompanying the paper:
 
 Circuit mechanisms for the maintenance and manipulation of information in working memory
